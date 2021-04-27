@@ -1,0 +1,49 @@
+<footer class="container" th:fragment="footer">
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script th:src="@{/js/app.js}"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+  <script src="https://cdn.ckeditor.com/ckeditor5/21.0.0/classic/ckeditor.js"></script>
+  <script>
+    function searchForProducts(pageId) {
+      let keyWord = document.getElementById("search").value;
+      if (keyWord.length > 0) {
+        const request = new XMLHttpRequest();
+        request.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            document.getElementById(
+              "search-results"
+            ).innerHTML = this.responseText;
+          }
+        };
+        let url = `/category/search/${keyWord}`;
+
+        if (pageId) {
+          url += "?page=" + pageId;
+        }
+        request.open("GET", url);
+        request.send();
+      }
+    }
+
+    $(".addToCart").on("click", ".addToCartElement", function (e) {
+      e.preventDefault();
+      console.log("magic");
+      let $this = $(this);
+      $this.next().removeClass("d-none");
+
+      let id = $this.attr("data-id");
+      let url = "/cart/add/" + id;
+      $.get(url, {}, function (data) {
+        $("div.cart").html(data);
+      }).done(function () {
+        $this.parent().parent().find("div.productAdded").fadeIn();
+        $this.next().addClass("d-none");
+        setTimeout(() => {
+          $this.parent().parent().find("div.productAdded").fadeOut();
+        }, 1000);
+      });
+    });
+  </script>
+</footer>
